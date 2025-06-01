@@ -88,3 +88,50 @@ data class Execution(
     val id: String,
     val merchantReference: String
 )
+
+/**
+ * Data class representing the sensitive card details collected from the UI.
+ * This should ideally *not* be sent directly to your backend or Payrails API for PCI compliance.
+ * Instead, use a Payrails client-side tokenization mechanism.
+ */
+data class CardDetails(
+    val cardNumber: String,
+    val expiryMonth: String,
+    val expiryYear: String,
+    val cvv: String
+)
+
+data class CardTokenizationRequest(
+    val cardNumber: String,
+    val expiryMonth: String,
+    val expiryYear: String,
+    val cvv: String
+)
+
+data class CardTokenResponse(
+    val cardToken: String,
+    val cardBrand: String,
+    // ... other card details if needed
+)
+
+data class PaymentInitiationRequest(
+    val amount: Amount,
+    val currency: String,
+    val merchantReference: String,
+    val paymentMethod: PaymentMethodDetails, // e.g., type "card", "paypal", "token"
+    val returnUrl: String, // For redirects after 3DS or APM
+    val cancelUrl: String
+)
+
+data class PaymentMethodDetails(
+    val type: String, // "card", "token", "paypal" etc.
+    val cardToken: String? = null // If using a pre-tokenized card
+    // ... other payment method specific fields
+)
+
+data class PaymentInitiationResponse(
+    val paymentId: String,
+    val status: String,
+    val redirectUrl: String? = null, // If 3DS or APM requires redirection
+    // ... other response fields
+)

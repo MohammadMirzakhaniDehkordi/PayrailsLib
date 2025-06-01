@@ -16,6 +16,24 @@ interface PayrailsApi {
     suspend fun getToken(@Path("clientId") clientId: String): TokenResponse
 
     /**
+    Potentially add an endpoint for client-side tokenization (if Payrails supports it)
+     This would typically involve sending raw card details *directly* to Payrails' tokenization service
+     and receiving a token, thus avoiding your backend handling raw card data.
+    */
+   // @POST("tokenization/cards") // Example endpoint, verify with Payrails docs
+   // suspend fun tokenizeCard(@Body cardDetails: CardTokenizationRequest): CardTokenResponse
+
+    /**
+     * Initiates a new payment.
+     * This is a common step before capturing or authorizing.
+     * The response might include a redirect URL for 3DS or APM.
+     * @param request [PaymentInitiationRequest] containing payment details.
+     * @return [PaymentInitiationResponse] which might include a checkout URL.
+     */
+    @POST("payments") // Example endpoint, verify with Payrails docs
+    suspend fun initiatePayment(@Body request: PaymentInitiationRequest): PaymentInitiationResponse
+
+    /**
      * Retrieves details of a specific payment by its ID.
      * @param paymentId The unique identifier of the payment.
      * @return [Payment] object containing payment details.
@@ -34,4 +52,14 @@ interface PayrailsApi {
         @Path("paymentId") paymentId: String,
         @Body request: CaptureRequest
     ): CaptureResponse
+
+    /**
+     *  Add other payment operations as needed (e.g., refund, void, authorize)
+     */
+//    @POST("payments/{paymentId}/refund")
+//    suspend fun refundPayment(
+//        @Path("paymentId") paymentId: String,
+//        @Body request: RefundRequest
+//    ): RefundResponse
+
 }
