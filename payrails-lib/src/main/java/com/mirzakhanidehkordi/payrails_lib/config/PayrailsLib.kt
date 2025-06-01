@@ -1,6 +1,7 @@
 package com.mirzakhanidehkordi.payrails_lib.config
 
 import com.mirzakhanidehkordi.payrails_lib.api.PayrailsApi
+import com.mirzakhanidehkordi.payrails_lib.auth.AuthTokenAuthenticator
 import com.mirzakhanidehkordi.payrails_lib.auth.TokenManager
 import com.mirzakhanidehkordi.payrails_lib.client.PayrailsClient
 import kotlinx.coroutines.runBlocking
@@ -16,10 +17,10 @@ enum class Environment {
 }
 
 /**
- * Singleton object for initializing and providing access to the Payrails SDK client.
+ * Singleton object for initializing and providing access to the Payrails Lib client.
  * Handles configuration of base URLs and API client setup, including token injection.
  */
-object PayrailsSDK {
+object PayrailsLib {
     private lateinit var client: PayrailsClient
     private lateinit var tokenManager: TokenManager
     private var baseUrl: String = "https://payrails-api.staging.payrails.io/" // Default staging URL
@@ -37,26 +38,32 @@ object PayrailsSDK {
             Environment.PRODUCTION -> "https://payrails-api.payrails.io/"
         }
 
-        // Create a Retrofit instance without the auth interceptor to get the initial token
-        val tempRetrofit = Retrofit.Builder()
+        // Initialize a basic Retrofit instance for token fetching (no auth interceptor needed here)
+        val authRetrofit = Retrofit.Builder()
             .baseUrl(baseUrl)
-            .client(OkHttpClient()) // Use a basic OkHttpClient for token fetching
+            .client(OkHttpClient.Builder().build()) // Basic client for auth requests
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
-        tokenManager = TokenManager(tempRetrofit.create(PayrailsApi::class.java), clientId)
+        tokenManager = TokenManager(authRetrofit.create(PayrailsApi::class.java), clientId)
 
-        // Create an OkHttpClient with an interceptor to add the authorization header
+        // Create an OkHttpClient with an Authenticator for token refresh
         val okHttpClient = OkHttpClient.Builder()
             .addInterceptor { chain ->
-                // This call is blocking, consider moving token acquisition out of interceptor
-                // for a more reactive approach in a real-world scenario (e.g., using an authenticator)
-                val token = runBlocking { tokenManager.getToken() }
-                val request = chain.request().newBuilder()
-                    .addHeader("Authorization", "Bearer $token")
-                    .build()
-                chain.proceed(request)
+                // This interceptor just adds the *current* token if available.
+                // The Authenticator handles refreshing when a 401 occurs.
+                val originalRequest = chain.request()
+                val token = tokenManager.getCurrentToken() // Get currently cached token without blocking
+                if (token != null && originalRequest.header("Authorization") == null) {
+                    val authorizedRequest = originalRequest.newBuilder()
+                        .header("Authorization", "Bearer $token")
+                        .build()
+                    chain.proceed(authorizedRequest)
+                } else {
+                    chain.proceed(originalRequest)
+                }
             }
+            .authenticator(AuthTokenAuthenticator(tokenManager)) // Custom Authenticator
             .build()
 
         // Build the main Retrofit instance with the authenticated OkHttpClient
@@ -67,8 +74,9 @@ object PayrailsSDK {
             .build()
 
         val api = retrofit.create(PayrailsApi::class.java)
-        client = PayrailsClient(api, tokenManager)
+        client = PayrailsClient(api, tokenManager) // tokenManager might not be needed in PayrailsClient directly now
     }
+
 
     /**
      * Provides the initialized [PayrailsClient] instance.

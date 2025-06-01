@@ -3,45 +3,41 @@ package com.mirzakhanidehkordi.payrailssample
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.mirzakhanidehkordi.payrails_lib.config.Environment
+import com.mirzakhanidehkordi.payrails_lib.config.PayrailsLib
+import com.mirzakhanidehkordi.payrailssample.presentation.checkout.CheckoutScreen
+import com.mirzakhanidehkordi.payrailssample.presentation.main.MainScreen
+import com.mirzakhanidehkordi.payrailssample.presentation.navigation.AppScreens // New import for navigation routes
 import com.mirzakhanidehkordi.payrailssample.ui.theme.PayrailsSampleTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+
+
+        PayrailsLib.initialize("demo_client_id", Environment.STAGING)
+
         setContent {
-            PayrailsSampleTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+            PayrailsSampleTheme  {
+                val navController = rememberNavController()
+                NavHost(navController = navController, startDestination = AppScreens.Main.route) {
+                    composable(AppScreens.Main.route) { MainScreen(navController = navController) }
+                    composable(AppScreens.Checkout.route) { CheckoutScreen(navController = navController) }
                 }
             }
         }
     }
 }
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
 @Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
+fun DefaultPreview() {
     PayrailsSampleTheme {
-        Greeting("Android")
+
     }
 }
