@@ -20,8 +20,8 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin' # Recommended distribution
-          java-version: '11' # Use Java 11 as specified in your build.gradle files
-          cache: 'gradle' # Cache Gradle dependencies for faster builds
+          java-version: '17'
+          cache: 'gradle'
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew # Ensure the Gradle wrapper is executable
