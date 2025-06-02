@@ -1,4 +1,5 @@
-# 🚧 Under Construction ⚠️ - Payrails Android SDK (POC/WIP) 
+## 🚧 Under Construction ⚠️ 
+# Payrails Android SDK (POC/WIP) 
 
 ## Streamlining Payments on Android with Payrails
 
@@ -226,5 +227,94 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+```
+### 2. Access the initialized client to perform API operations:
 
+```kotlin
+import com.mirzakhanidehkordi.payrails_lib.client.PayrailsClient
+import com.mirzakhanidehkordi.payrails_lib.config.PayrailsLib
+import com.mirzakhanidehkordi.payrails_lib.api.ApiResult
 
+// Inside a ViewModel or a suspendable context
+private suspend fun getPayrailsClientSafely(): PayrailsClient? {
+    return try {
+        PayrailsLib.getClient()
+    } catch (e: IllegalStateException) {
+        // Handle initialization error, e.g., show a message to the user
+        // _uiState.value = _uiState.value.copy(resultMessage = e.message ?: "SDK not initialized")
+        null
+    }
+}
+
+// Example usage in a ViewModel
+fun getPaymentDetails(paymentId: String) {
+    viewModelScope.launch {
+        val client = getPayrailsClientSafely() ?: return@launch
+        when (val result = client.getPayment(paymentId)) {
+            is ApiResult.Success -> { /* handle success */ }
+            is ApiResult.Error -> { /* handle error */ }
+        }
+    }
+}
+```
+### 3. Client-Side Card Tokenization
+Use `CardInputView` to collect details and then `PayrailsClient` to tokenize:
+
+```kotlin
+// In your Composable (e.g., a payment screen)
+import com.mirzakhanidehkordi.payrails_lib.ui.CardInputView
+import com.mirzakhanidehkordi.payrails_lib.auth.CardDetails
+import com.mirzakhanidehkordi.payrails_lib.client.PayrailsClient
+import com.mirzakhanidehkordi.payrails_lib.config.PayrailsLib
+
+@Composable
+fun PaymentScreen(viewModel: PaymentViewModel = viewModel()) {
+    CardInputView { cardDetails ->
+        viewModel.tokenizeCard(cardDetails)
+    }
+}
+
+// In your PaymentViewModel
+class PaymentViewModel : ViewModel() {
+    fun tokenizeCard(cardDetails: CardDetails) {
+        viewModelScope.launch {
+            val client = PayrailsLib.getClient() // Ensure initialized
+            when (val result = client.tokenizeCard(cardDetails)) {
+                is ApiResult.Success -> {
+                    val tokenizedCard = result.data
+                    // Send tokenizedCard.tokenId to your backend
+                    // Handle success, e.g., navigate to confirmation
+                }
+                is ApiResult.Error -> {
+                    // Handle error, show message to user
+                }
+            }
+        }
+    }
+}
+```
+### 4. Handling Web Checkout Flows
+Use `CheckoutWebView` for 3D Secure or other redirected payment methods:
+
+```kotlin
+// In your CheckoutScreen.kt
+import com.mirzakhanidehkordi.payrails_lib.ui.CheckoutWebView
+
+@Composable
+fun CheckoutScreen(navController: NavController) {
+    CheckoutWebView(
+        url = "https://your-payrails-checkout-url.com/some_path", // Provided by Payrails for the payment session
+        successRedirectUrl = "https://your-app.com/payrails/success", // Your app's deep link or specific URL for success
+        failureRedirectUrl = "https://your-app.com/payrails/failure", // Your app's deep link or specific URL for failure
+        onComplete = {
+            // Payment completed successfully, navigate back or to a success screen
+            navController.popBackStack()
+        },
+        onError = { errorMessage ->
+            // Payment failed or was cancelled, show error message
+            // Log.e("CheckoutScreen", "Checkout WebView Error: $errorMessage")
+            navController.popBackStack()
+        }
+    )
+}
+```
