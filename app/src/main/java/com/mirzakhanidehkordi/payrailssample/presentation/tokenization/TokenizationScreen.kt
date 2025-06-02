@@ -1,12 +1,10 @@
-package com.mirzakhanidehkordi.payrailssample.presentation.main
+package com.mirzakhanidehkordi.payrailssample.presentation.tokenization
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
@@ -23,25 +21,27 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.mirzakhanidehkordi.payrailssample.presentation.navigation.AppScreens
+import com.mirzakhanidehkordi.payrails_lib.auth.CardDetails
+import com.mirzakhanidehkordi.payrails_lib.ui.CardInputView
+import com.mirzakhanidehkordi.payrailssample.presentation.main.MainViewModel
 
 /**
- * Composable for the main screen of the application.
- * It observes state from [MainViewModel] and dispatches UI events.
+ * Composable for the card tokenization screen.
+ * It uses the [CardInputView] from the PayrailsLib to collect card details
+ * and triggers the tokenization process via [MainViewModel].
  *
- * @param navController The NavController for navigating between screens.
- * @param viewModel The [MainViewModel] instance, typically provided by Hilt or default ViewModel factory.
+ * @param navController The NavController for handling navigation.
+ * @param viewModel The [MainViewModel] instance to interact with PayrailsLib.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(
+fun TokenizationScreen(
     navController: NavController,
     viewModel: MainViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    // Use LaunchedEffect to show Snackbar when resultMessage changes
     LaunchedEffect(uiState.resultMessage) {
         if (uiState.resultMessage.isNotBlank() && !uiState.isLoading) {
             snackbarHostState.showSnackbar(uiState.resultMessage)
@@ -56,50 +56,23 @@ fun MainScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
                 .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Button(
-                onClick = { viewModel.getPaymentDetails("fe67fc45-ce47-4fc8-a283-22d03ae68b77") },
-                enabled = !uiState.isLoading
-            ) {
-                Text("Get Payment Details")
-            }
-
+            Text(text = "Enter Card Details for Tokenization")
             Spacer(modifier = Modifier.height(16.dp))
 
-            Button(
-                onClick = { viewModel.capturePayment("fe67fc45-ce47-4fc8-a283-22d03ae68b77", 12.50, "EUR") },
-                enabled = !uiState.isLoading
-            ) {
-                Text("Capture Payment")
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Button(
-                onClick = { navController.navigate(AppScreens.Checkout.route) },
-                enabled = !uiState.isLoading
-            ) {
-                Text("Start Checkout")
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Button(
-                onClick = { navController.navigate(AppScreens.Tokenization.route) },
-                enabled = !uiState.isLoading
-            ) {
-                Text("Tokenize Card")
-            }
+            CardInputView(
+                onCardDetailsEntered = { cardDetails: CardDetails ->
+                    viewModel.tokenizeCard(cardDetails)
+                }
+            )
 
             Spacer(modifier = Modifier.height(32.dp))
 
             if (uiState.isLoading) {
                 CircularProgressIndicator()
-                Text("Loading...")
+                Text("Tokenizing card...")
             }
-
         }
     }
 }

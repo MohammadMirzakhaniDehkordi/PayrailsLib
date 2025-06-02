@@ -19,6 +19,7 @@ navigationCompose = "2.9.0"
 okhttp = "4.11.0"
 retrofit = "2.9.0"
 junitJupiter = "5.10.2"
+android-junit5 = "1.12.2.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -57,4 +58,4 @@ android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 android-library = { id = "com.android.library", version.ref = "agp" }
-
+junit5 = { id = "de.mannodermaus.android-junit5", version.ref = "android-junit5" }

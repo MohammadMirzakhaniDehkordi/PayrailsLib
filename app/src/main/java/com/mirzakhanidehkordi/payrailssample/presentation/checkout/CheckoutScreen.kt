@@ -1,15 +1,21 @@
 package com.mirzakhanidehkordi.payrailssample.presentation.checkout
 
-
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.mirzakhanidehkordi.payrails_lib.ui.CheckoutWebView // Assuming this is your updated CheckoutWebView
+import com.mirzakhanidehkordi.payrails_lib.ui.CheckoutWebView
 
 /**
  * Composable for the checkout screen, displaying a WebView.
@@ -18,28 +24,32 @@ import com.mirzakhanidehkordi.payrails_lib.ui.CheckoutWebView // Assuming this i
  */
 @Composable
 fun CheckoutScreen(navController: NavController) {
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        // IMPORTANT: Replace with a real Payrails checkout URL and proper redirect URLs from Lib documentation
+        // IMPORTANT: Replace with a real Payrails checkout URL and REAL redirect URLs from Lib documentation
+        // These URLs are crucial for the WebView to correctly identify success and failure
         CheckoutWebView(
-            url = "https://your-payrails-checkout-url.com/some_path", // Replace with the actual URL provided by Payrails for the checkout flow
-            successRedirectUrl = "https://your-app.com/payrails/success", // Replace with your app's designated success redirect URL (or a custom scheme)
-            failureRedirectUrl = "https://your-app.com/payrails/failure", // Replace with your app's designated failure redirect URL (or a custom scheme)
+            url = "https://example.com/your-payrails-checkout-page", // Replace with your actual Payrails checkout URL
+            successRedirectUrl = "https://yourapp.com/payrails/success", // Replace with your app's success redirect URL
+            failureRedirectUrl = "https://yourapp.com/payrails/failure", // Replace with your app's failure redirect URL
             onComplete = {
-                // Handle successful checkout, e.g., navigate to a success screen
+                errorMessage = null
                 navController.popBackStack()
-                // You might also want to show a success message or fetch updated payment status
             },
-            onError = { errorMessage ->
-                // Handle checkout errors, e.g., show a Toast or navigate back with an error message
-                // Log.e("CheckoutScreen", "Checkout WebView Error: $errorMessage")
-                navController.popBackStack() // Or navigate to an error screen
-                // Show a user-friendly error message
+            onError = { error ->
+                errorMessage = error
             }
         )
+
+        errorMessage?.let {
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(text = "Error: $it")
+        }
     }
 }
