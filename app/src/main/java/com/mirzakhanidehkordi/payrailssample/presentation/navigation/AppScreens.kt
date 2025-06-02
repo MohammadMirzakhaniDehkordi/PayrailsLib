@@ -7,7 +7,7 @@ package com.mirzakhanidehkordi.payrailssample.presentation.navigation
 sealed class AppScreens(val route: String) {
     object Main : AppScreens("main_screen")
     object Checkout : AppScreens("checkout_screen")
-
+    object Tokenization : AppScreens("tokenization_screen")
     // Can add arguments to routes like this:
     // object Detail : AppScreens("detail_screen/{itemId}") {
     //     fun createRoute(itemId: String) = "detail_screen/$itemId"

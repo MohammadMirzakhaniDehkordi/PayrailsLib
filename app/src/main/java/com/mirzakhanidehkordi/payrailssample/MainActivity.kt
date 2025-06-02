@@ -12,7 +12,8 @@ import com.mirzakhanidehkordi.payrails_lib.config.Environment
 import com.mirzakhanidehkordi.payrails_lib.config.PayrailsLib
 import com.mirzakhanidehkordi.payrailssample.presentation.checkout.CheckoutScreen
 import com.mirzakhanidehkordi.payrailssample.presentation.main.MainScreen
-import com.mirzakhanidehkordi.payrailssample.presentation.navigation.AppScreens // New import for navigation routes
+import com.mirzakhanidehkordi.payrailssample.presentation.navigation.AppScreens
+import com.mirzakhanidehkordi.payrailssample.presentation.tokenization.TokenizationScreen
 import com.mirzakhanidehkordi.payrailssample.ui.theme.PayrailsSampleTheme
 
 class MainActivity : ComponentActivity() {
@@ -28,6 +29,7 @@ class MainActivity : ComponentActivity() {
                 NavHost(navController = navController, startDestination = AppScreens.Main.route) {
                     composable(AppScreens.Main.route) { MainScreen(navController = navController) }
                     composable(AppScreens.Checkout.route) { CheckoutScreen(navController = navController) }
+                    composable(AppScreens.Tokenization.route) { TokenizationScreen(navController = navController) } // Added TokenizationScreen
                 }
             }
         }
