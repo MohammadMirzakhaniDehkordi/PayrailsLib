@@ -89,16 +89,19 @@ class TokenManagerUnitTests {
 
     @Test
     fun `getOrRefreshToken should throw exception if token fetching fails`() = runTest {
-        // Arrange: Make the mock API throw an exception when getToken is called
+        // Arrange
         val errorMessage = "Network error"
         coEvery { mockPayrailsApi.getToken(clientId) } throws Exception(errorMessage)
 
-        // Act & Assert: Verify that the exception is re-thrown
-        val exception = assertThrows(Exception::class.java) {
-            runTest { tokenManager.getOrRefreshToken() }
+        // Act & Assert
+        val exception = try {
+            tokenManager.getOrRefreshToken()
+            null
+        } catch (ex: Exception) {
+            ex
         }
-        assertEquals(errorMessage, exception.message)
-        // Verify that no token is cached
+        assertNotNull(exception, "Expected an exception to be thrown")
+        assertEquals(errorMessage, exception?.message)
         assertNull(tokenManager.getCurrentToken())
     }
 
