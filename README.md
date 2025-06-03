@@ -1,4 +1,4 @@
-## 🚧 Under Construction ⚠️ 
+## 🚧 Under Construction
 # Payrails Android SDK (POC/WIP) 
 
 ## Streamlining Payments on Android with Payrails
@@ -16,6 +16,52 @@ This SDK aims to empower Android developers to build robust payment flows that i
 * **Customizable Checkout:** Offering flexibility in the user payment journey.
 * **Reduced PCI DSS Scope:** By implementing client-side tokenization.
 
+---
+
+## 📋 Payrails API Coverage & Roadmap
+
+This SDK implements key Payrails platform features for Android. The table below shows which features are already available and which are recommended for future development, based on the [Payrails API Reference](https://docs.payrails.com/reference/).
+
+### ✅ Implemented Features
+
+- **Authentication:** Secure token management and refresh
+- **Payment Initiation:** Start a payment with amount, method, and merchant reference
+- **Payment Details:** Fetch payment status and metadata
+- **Payment Capture:** Capture funds from authorized payments
+- **Client-side Card Tokenization:** Collect and tokenize card details natively (PCI DSS reduction)
+- **Composable UI Components:**  
+  - Card input (Jetpack Compose)  
+  - Web-based checkout UI (for 3DS, redirects, etc.)
+- **Environment Switching:** Staging and production support
+- **Robust API Error Handling:** Unified result handling
+- **Sample integration app and documentation**
+
+### Planned Features
+
+| Feature Area                         | Status        | Notes / Reference                                        |
+|-------------------------------------- |-------------- |---------------------------------------------------------|
+| **Refunds (full/partial)**            | ❌ Missing    | Add endpoint and flow for refunding payments             |
+| **Voids/Cancellation**                | ❌ Missing    | Cancel/void payments before settlement                   |
+| **Saved Payment Methods (Vaulting)**  | ❌ Missing    | Support storing/reusing tokens, one-click flows          |
+| **Alternative Payment Methods (APMs)**| ❌ Missing    | Support wallets, bank debits, PayPal, etc.               |
+| **3D Secure & SCA**                   | ⚠️ Basic      | Handle full 3DS flows, challenges, result parsing        |
+| **Payment Status Polling**            | ❌ Missing    | Polling, async status, or webhook handoff                |
+| **Advanced Error Mapping**            | ⚠️ Basic      | Expose all API error codes, user-friendly messages       |
+| **Custom UI Hooks/Events**            | ❌ Missing    | Allow integrators to extend or customize UI              |
+| **API Endpoint Coverage**             | ⚠️ Partial    | Compare SDK interface to all Payrails REST endpoints     |
+| **Testing/Mock Mode**                 | ❌ Missing    | Enable easier integration tests & demo use               |
+
+#### Legend
+- ✅ Available
+- ⚠️ Partial/basic
+- ❌ To be added
+
+### 📈 How to Contribute
+
+- See the [Payrails API Reference](https://docs.payrails.com/reference/) for full endpoint details.
+- PRs for missing endpoints, new payment methods, or UX enhancements are welcome!
+- Please check the [Issues](../../issues) for feature requests and progress.
+  
 ---
 
 ## Architectural Highlights
@@ -42,52 +88,6 @@ The SDK is structured for modularity and maintainability, separating concerns be
 * **Kotlin 2.0 & Compose Compatibility:** Configured to work with Kotlin 2.0.21 and a compatible Compose compiler extension (`1.6.0-beta01`), addressing common build issues related to these versions.
 
 ---
-
-## 📋 Payrails API Coverage & Roadmap
-
-This SDK implements key Payrails platform features for Android. The table below shows which features are already available and which are recommended for future development, based on the [Payrails API Reference](https://docs.payrails.com/reference/).
-
-### ✅ Implemented Features
-
-- **Authentication:** Secure token management and refresh
-- **Payment Initiation:** Start a payment with amount, method, and merchant reference
-- **Payment Details:** Fetch payment status and metadata
-- **Payment Capture:** Capture funds from authorized payments
-- **Client-side Card Tokenization:** Collect and tokenize card details natively (PCI DSS reduction)
-- **Composable UI Components:**  
-  - Card input (Jetpack Compose)  
-  - Web-based checkout UI (for 3DS, redirects, etc.)
-- **Environment Switching:** Staging and production support
-- **Robust API Error Handling:** Unified result handling
-- **Sample integration app and documentation**
-
-### 🟡 Recommended & Planned Features
-
-| Feature Area                         | Status        | Notes / Reference                                        |
-|-------------------------------------- |-------------- |---------------------------------------------------------|
-| **Refunds (full/partial)**            | ❌ Missing    | Add endpoint and flow for refunding payments             |
-| **Voids/Cancellation**                | ❌ Missing    | Cancel/void payments before settlement                   |
-| **Saved Payment Methods (Vaulting)**  | ❌ Missing    | Support storing/reusing tokens, one-click flows          |
-| **Alternative Payment Methods (APMs)**| ❌ Missing    | Support wallets, bank debits, PayPal, etc.               |
-| **3D Secure & SCA**                   | ⚠️ Basic      | Handle full 3DS flows, challenges, result parsing        |
-| **Payment Status Polling**            | ❌ Missing    | Polling, async status, or webhook handoff                |
-| **Advanced Error Mapping**            | ⚠️ Basic      | Expose all API error codes, user-friendly messages       |
-| **Custom UI Hooks/Events**            | ❌ Missing    | Allow integrators to extend or customize UI              |
-| **API Endpoint Coverage**             | ⚠️ Partial    | Compare SDK interface to all Payrails REST endpoints     |
-| **Testing/Mock Mode**                 | ❌ Missing    | Enable easier integration tests & demo use               |
-
-#### Legend
-- ✅ Available
-- ⚠️ Partial/basic
-- ❌ To be added
-
-### 📈 How to Contribute
-
-- See the [Payrails API Reference](https://docs.payrails.com/reference/) for full endpoint details.
-- PRs for missing endpoints, new payment methods, or UX enhancements are welcome!
-- Please check the [Issues](../../issues) for feature requests and progress.
-  
-
 ## Getting Started
 
 To get started with the Payrails Android SDK, follow these steps:
