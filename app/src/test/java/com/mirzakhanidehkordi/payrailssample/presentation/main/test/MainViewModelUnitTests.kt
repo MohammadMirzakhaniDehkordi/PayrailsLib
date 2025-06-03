@@ -9,6 +9,7 @@ import com.mirzakhanidehkordi.payrails_lib.config.PayrailsLib
 import com.mirzakhanidehkordi.payrailssample.presentation.main.MainUiState
 import com.mirzakhanidehkordi.payrailssample.presentation.main.MainViewModel
 import io.mockk.*
+import io.mockk.unmockkObject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.*
@@ -43,6 +44,7 @@ class MainViewModelUnitTests {
         // Reset the Main dispatcher
         Dispatchers.resetMain()
         // Clear all mocks
+        unmockkObject(PayrailsLib)
         unmockkAll()
     }
 
