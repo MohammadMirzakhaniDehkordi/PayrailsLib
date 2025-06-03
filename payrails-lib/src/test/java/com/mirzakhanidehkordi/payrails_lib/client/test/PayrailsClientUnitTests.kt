@@ -8,8 +8,11 @@ import com.mirzakhanidehkordi.payrails_lib.auth.tokenizeCard // Import the exten
 import com.mirzakhanidehkordi.payrails_lib.client.PayrailsClient
 import io.mockk.coEvery
 import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.*
@@ -26,6 +29,12 @@ class PayrailsClientUnitTests {
         mockPayrailsApi = mockk()
         mockTokenManager = mockk()
         payrailsClient = PayrailsClient(mockPayrailsApi, mockTokenManager)
+        mockkStatic("com.mirzakhanidehkordi.payrails_lib.auth.CardTokenizerKt")
+    }
+
+    @AfterEach
+    fun tearDown() {
+        unmockkStatic("com.mirzakhanidehkordi.payrails_lib.auth.CardTokenizerKt")
     }
 
     @Test
